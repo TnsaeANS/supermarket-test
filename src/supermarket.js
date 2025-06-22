@@ -1,71 +1,49 @@
-import './App.css';
-import { useState } from 'react';
-
-function Supermarket() {
-  const [cart, setCart] = useState([]);
-
-  const addToCart = (item) => {
-    setCart(prevCart => {
-      const existingItem = prevCart.find(cartItem => cartItem.id === item.id);
-      
-      if (existingItem) {
-        return prevCart.map(cartItem =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        );
-      } else {
-        return [...prevCart, { ...item, quantity: 1 }];
-      }
-    });
-  };
-
-  const removeFromCart = (itemId) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== itemId));
-  };
-
-  const updateQuantity = (itemId, newQuantity) => {
-    if (newQuantity < 1) {
-      removeFromCart(itemId);
-      return;
-    }
-
-    setCart(prevCart =>
-      prevCart.map(item =>
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
-      )
+function addToCart(cart, item) {
+  const existingItem = cart.find(i => i.id === item.id);
+  if (existingItem) {
+    return cart.map(i =>
+      i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
     );
-  };
-
-  const incrementQuantity = (itemId) => {
-    updateQuantity(itemId, 
-      (cart.find(item => item.id === itemId)?.quantity || 0) + 1
-    );
-  };
-
-  const decrementQuantity = (itemId) => {
-    const currentItem = cart.find(item => item.id === itemId);
-    if (currentItem) {
-      updateQuantity(itemId, currentItem.quantity - 1);
-    }
-  };
-
-  const getTotalItems = () => {
-    return cart.reduce((total, item) => total + item.quantity, 0);
-  };
-
-  const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
-
-  const clearCart = () => {
-    setCart([]);
-  };
-
-  return (
-    <div className="App">
-    </div>
-  );
+  } else {
+    return [...cart, { ...item, quantity: 1 }];
+  }
 }
 
-export default Supermarket;
+function addMultipleToCart(cart, item, quantity) {
+  const existingItem = cart.find(i => i.id === item.id);
+  if (existingItem) {
+    return cart.map(i =>
+      i.id === item.id
+        ? { ...i, quantity: i.quantity + quantity }
+        : i
+    );
+  } else {
+    return [...cart, { ...item, quantity }];
+  }
+}
+
+function removeFromCart(cart, itemId) {
+  return cart.filter(item => item.id !== itemId);
+}
+
+function getTotalItems(cart) {
+  return cart.reduce((sum, item) => sum + item.quantity, 0);
+}
+
+function getTotalPrice(cart) {
+  return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+}
+
+function applyDiscount(totalPrice, discountPercent) {
+  const discount = (discountPercent / 100) * totalPrice;
+  return totalPrice - discount;
+}
+
+module.exports = {
+  addToCart,
+  addMultipleToCart,
+  removeFromCart,
+  getTotalItems,
+  getTotalPrice,
+  applyDiscount
+};
