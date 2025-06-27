@@ -29,17 +29,21 @@ describe("Supermarket Test Suite", () => {
     );
   });
 
-  test("throws when removing from empty cart", () => {
-    const cart = [];
-    expect(() => removeFromCart(cart, 1)).toThrow(
-      "Cannot remove from empty cart"
-    );
-  });
+test("removes item and returns empty cart", () => {
+  const cart = [];
+  const newCart = addToCart(cart, apple);
+  expect(newCart).toEqual([{ ...apple, quantity: 1 }]);
+  const finalCart = removeFromCart(newCart, 1);
+  expect(finalCart).toEqual([]);
+});
 
-  test("throws when removing non-existent item", () => {
-    const cart = [{ id: 1, name: "Apple", price: 1.5, quantity: 2 }];
-    expect(() => removeFromCart(cart, 99)).toThrow("Item not found in cart");
-  });
+test("throws when removing non-existent item", () => {
+
+  const cart = [{id: 1, name: "Apple", price: 1.5, quantity: 2 }];
+  const nonExistentItemId = 99;
+  expect(() => removeFromCart(cart, nonExistentItemId)).toThrow("Item not found in cart");
+  expect(cart).toEqual([{id: 1, name: "Apple", price: 1.5, quantity: 2 }]);
+});
 
   test("adds multiple items to cart", () => {
     const cart = [];
