@@ -1,63 +1,86 @@
-function addToCart(cart, item) {
+function validateItem(item) {
   if (!item || typeof item.id !== 'number' || typeof item.price !== 'number') {
-    throw new Error('Invalid item');
+    throw new Error('Invalid item: must have numeric id and price');
   }
+}
 
-  const existingItem = cart.find(i => i.id === item.id);
-  if (existingItem) {
-    return cart.map(i =>
-      i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
-    );
-  } else {
-    return [...cart, { ...item, quantity: 1 }];
+function validateCart(cart) {
+  if (!Array.isArray(cart)) {
+    throw new Error('Cart must be an array');
   }
+}
+
+function validateQuantity(quantity) {
+  if (typeof quantity !== 'number' || quantity < 1) {
+    throw new Error('Invalid quantity: must be a number greater than 0');
+  }
+}
+
+function validateDiscount(discountPercent) {
+  if (discountPercent < 0 || discountPercent > 100) {
+    throw new Error('Invalid discount percentage: must be between 0 and 100');
+  }
+}
+
+function addToCart(cart, item) {
+  validateItem(item);
+  validateCart(cart);
+  
+  const newCart = [...cart];
+  const existingItemIndex = newCart.findIndex(i => i.id === item.id);
+  
+  if (existingItemIndex !== -1) {
+    newCart[existingItemIndex].quantity += 1;
+  } else {
+    newCart.push({ ...item, quantity: 1 });
+  }
+  
+  return newCart;
 }
 
 function addMultipleToCart(cart, item, quantity) {
-  if (!item || typeof item.id !== 'number' || typeof item.price !== 'number') {
-    throw new Error('Invalid item');
-  }
-
-  if (typeof quantity !== 'number' || quantity < 1) {
-    throw new Error('Invalid quantity');
-  }
-
-  const existingItem = cart.find(i => i.id === item.id);
-  if (existingItem) {
-    return cart.map(i =>
-      i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i
-    );
+  validateItem(item);
+  validateCart(cart);
+  validateQuantity(quantity);
+  
+  const newCart = [...cart];
+  const existingItemIndex = newCart.findIndex(i => i.id === item.id);
+  
+  if (existingItemIndex !== -1) {
+    newCart[existingItemIndex].quantity += quantity;
   } else {
-    return [...cart, { ...item, quantity }];
+    newCart.push({ ...item, quantity });
   }
+  
+  return newCart;
 }
 
 function removeFromCart(cart, itemId) {
-  if (!Array.isArray(cart) || cart.length === 0) {
-    throw new Error('Cannot remove from empty cart');
-  }
-
-  const exists = cart.some(item => item.id === itemId);
-  if (!exists) {
-    throw new Error('Item not found in cart');
-  }
-
-  return cart.filter(item => item.id !== itemId);
+  validateCart(cart);
+  if (cart.length === 0) throw new Error('Cannot remove from empty cart');
+  
+  const index = cart.findIndex(item => item.id === itemId);
+  if (index === -1) throw new Error('Item not found in cart');
+  
+  return [...cart.slice(0, index), ...cart.slice(index + 1)];
 }
 
 function getTotalItems(cart) {
+  validateCart(cart);
   return cart.reduce((sum, item) => sum + item.quantity, 0);
 }
 
 function getTotalPrice(cart) {
+  validateCart(cart);
   return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 }
 
 function applyDiscount(totalPrice, discountPercent) {
-  if (discountPercent < 0 || discountPercent > 100) {
-    throw new Error('Invalid discount percentage');
+  if (typeof totalPrice !== 'number') {
+    throw new Error('Total price must be a number');
   }
-
+  validateDiscount(discountPercent);
+  
   return totalPrice - (discountPercent / 100) * totalPrice;
 }
 
