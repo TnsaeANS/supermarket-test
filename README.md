@@ -19,6 +19,11 @@ You may also see any lint errors in the console.
 Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
+## this project is for testing a simple supermarket business logic using jest
+## as stated above, run -npm test- and the tests should pass...hopefully
+## this project does not have any ui or frontend capabilities
+## it is only backend 
+
 ### `npm run build`
 
 Builds the app for production to the `build` folder.\
